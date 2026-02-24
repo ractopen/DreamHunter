@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "167750425566",
+    "project_id": "dream-hunter-c0f89",
+    "storage_bucket": "dream-hunter-c0f89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167750425566:android:1200f8f37680fef3dedb4f",
+        "android_client_info": {
+          "package_name": "com.dreamhunter.ryme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUCYw-9PRPpx8qL2dC5-Yxm4FDXY694og"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
