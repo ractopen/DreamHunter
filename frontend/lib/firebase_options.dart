@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     projectId: 'dream-hunter-c0f89',
     storageBucket: 'dream-hunter-c0f89.firebasestorage.app',
   );
+
 }

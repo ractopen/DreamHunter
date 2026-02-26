@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatefulWidget{
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() = _RegisterScreen();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreen extends State<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Stack(
-        children: [
-          
-        ],
+        children: [],
       ),
     );
   }

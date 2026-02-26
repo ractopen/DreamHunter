@@ -12,7 +12,12 @@
           "package_name": "com.dreamhunter.ryme"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "167750425566-qi52tbprnitce73o8u07qipesdtluuru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBUCYw-9PRPpx8qL2dC5-Yxm4FDXY694og"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "167750425566-qi52tbprnitce73o8u07qipesdtluuru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
