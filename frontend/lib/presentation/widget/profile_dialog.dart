@@ -19,11 +19,12 @@ class ProfileDialog extends StatelessWidget {
     return LiquidGlassDialog(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
               'Profile',
               style: TextStyle(
                 color: Colors.white,
@@ -78,6 +79,7 @@ class ProfileDialog extends StatelessWidget {
           ],
         ),
       ),
+    )
     );
   }
 }

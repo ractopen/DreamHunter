@@ -248,10 +248,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.15,
             child: Image.asset(
-              'assets/widget/singage.png',
+              'assets/widget/signage.png',
               fit: BoxFit.contain,
-              width: 200,
-              height: 200,
+              width: 80,
+              height: 80,
             ),
           ),
           Positioned(

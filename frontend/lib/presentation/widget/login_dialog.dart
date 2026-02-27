@@ -75,11 +75,12 @@ class _LoginDialogState extends State<LoginDialog> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
                 'Login',
                 style: TextStyle(
                   color: Colors.white,
@@ -185,6 +186,7 @@ class _LoginDialogState extends State<LoginDialog> {
           ),
         ),
       ),
+      )
     );
   }
 }
