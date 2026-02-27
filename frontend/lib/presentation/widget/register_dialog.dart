@@ -1,3 +1,4 @@
+import 'package:dreamhunter/presentation/widget/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dreamhunter/presentation/widget/liquid_glass_dialog.dart';
@@ -25,11 +26,10 @@ class _RegisterDialogState extends State<RegisterDialog> {
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Passwords do not match!'),
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
-          ),
+        showCustomSnackBar(
+          context,
+          'Passwords do not match!',
+          type: SnackBarType.error,
         );
         return;
       }
@@ -58,19 +58,17 @@ class _RegisterDialogState extends State<RegisterDialog> {
           default:
             message = e.message ?? 'An unknown error occurred.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
-          ),
+        showCustomSnackBar(
+          context,
+          message,
+          type: SnackBarType.error,
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('An unexpected error occurred: $e'),
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
-          ),
+        showCustomSnackBar(
+          context,
+          'An unexpected error occurred: $e',
+          type: SnackBarType.error,
         );
       }
     }

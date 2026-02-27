@@ -1,6 +1,6 @@
+import 'package:dreamhunter/presentation/widget/custom_snackbar.dart';
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dreamhunter/presentation/widget/clickable_image.dart';
@@ -73,11 +73,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     setDialogState(() {
                       _isLoggedIn = true;
                       _currentDialogType = AuthDialogType.profile;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Login successful!'),
-                          backgroundColor: Colors.greenAccent.withValues(alpha: 0.8),
-                        ),
+                      showCustomSnackBar(
+                        context,
+                        'Login successful!',
+                        type: SnackBarType.success,
                       );
                     });
                   },
@@ -93,11 +92,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onRegisterSuccess: () {
                     setDialogState(() {
                       _currentDialogType = AuthDialogType.login;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Registration successful! Please log in.'),
-                          backgroundColor: Colors.greenAccent.withValues(alpha: 0.8),
-                        ),
+                      showCustomSnackBar(
+                        context,
+                        'Registration successful! Please log in.',
+                        type: SnackBarType.success,
                       );
                     });
                   },
@@ -207,7 +205,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: const [],
+        scrolledUnderElevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: MakeItButton(
+              imagePath: 'assets/widget/sandwitch.png',
+              width: 45,
+              height: 45,
+              onTap: _showAuthDialog,
+              clickResponsiveness: true,
+              onHoverGlow: true,
+              isClickable: true,
+            ),
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -216,19 +228,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
-          ),
-          Positioned(
-            top: -10,
-            right: -22,
-            child: MakeItButton(
-              imagePath: 'assets/widget/profile.png',
-              width: 100,
-              height: 100,
-              onTap: _showAuthDialog,
-              clickResponsiveness: true,
-              onHoverGlow: true,
-              isClickable: true,
-            ),
           ),
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.15,
@@ -247,9 +246,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           Positioned(
+            bottom: MediaQuery.of(context).size.height * 0.15,
+            child: Image.asset(
+              'assets/widget/singage.png',
+              fit: BoxFit.contain,
+              width: 200,
+              height: 200,
+            ),
+          ),
+          Positioned(
             bottom: 0,
             child: Image.asset(
               'assets/widget/rouletman.png',
+              fit: BoxFit.contain,
+              width: 200,
+              height: 200,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: -1,
+            child: Image.asset(
+              'assets/widget/shopstall.png',
               fit: BoxFit.contain,
               width: 200,
               height: 200,

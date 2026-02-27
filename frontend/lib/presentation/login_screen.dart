@@ -1,3 +1,4 @@
+import 'package:dreamhunter/presentation/widget/custom_snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dreamhunter/presentation/dashboard_screen.dart'; // Assuming this is the next screen
@@ -40,8 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
           message = e.message ?? 'An unknown error occurred.';
         }
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
+          showCustomSnackBar(
+            context,
+            message,
+            type: SnackBarType.error,
           );
         }
       } finally {
