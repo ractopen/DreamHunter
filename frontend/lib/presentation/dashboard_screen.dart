@@ -50,7 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       barrierLabel: "AuthDialog",
       barrierDismissible: true,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: const Color.fromRGBO(0, 0, 0, 0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return StatefulBuilder(
@@ -58,8 +58,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Widget dialogContent;
             const double dialogWidth = 350;
             const double dialogHeight = 520;
-            const double logoHeight = 250;
-            const double logoOverlap = 125;
+            const double logoHeight = 375;
+            const double logoOverlap = 150;
 
             switch (_currentDialogType) {
               case AuthDialogType.login:
@@ -121,7 +121,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             }
 
             final double dialogX = (MediaQuery.of(context).size.width - dialogWidth) / 2;
-            final double dialogY = (MediaQuery.of(context).size.height - dialogHeight) / 2;
+            // Shifted dialogY down by another 40 pixels (total +100)
+            final double dialogY = (MediaQuery.of(context).size.height - dialogHeight) / 2 + 100;
 
             final double logoX = dialogX + (dialogWidth - logoHeight) / 2;
             final double logoY = dialogY - logoOverlap;
@@ -139,25 +140,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Container(
                         width: dialogWidth,
                         height: dialogHeight,
-                        padding: const EdgeInsets.fromLTRB(20, logoOverlap + 20, 20, 20),
+                        padding: const EdgeInsets.fromLTRB(20, logoOverlap + 10, 20, 20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color.fromRGBO(255, 255, 255, 0.1),
                           borderRadius: BorderRadius.circular(20.0),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: const Color.fromRGBO(255, 255, 255, 0.2),
                             width: 1.5,
                           ),
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [
-                              Colors.white.withValues(alpha: 0.15),
-                              Colors.white.withValues(alpha: 0.05),
+                              Color.fromRGBO(255, 255, 255, 0.15),
+                              Color.fromRGBO(255, 255, 255, 0.05),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
+                              color: Color.fromRGBO(0, 0, 0, 0.1),
                               blurRadius: 10,
                               spreadRadius: 5,
                             ),
@@ -172,10 +173,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Positioned(
                     left: logoX,
                     top: logoY,
-                    child: Image.asset(
-                      logoPath,
-                      width: logoHeight,
-                      height: logoHeight,
+                    child: IgnorePointer(
+                      child: Image.asset(
+                        logoPath,
+                        width: logoHeight,
+                        height: logoHeight,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
               ],

@@ -22,8 +22,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void _register() async {
@@ -41,13 +40,13 @@ class _RegisterDialogState extends State<RegisterDialog> {
         final String email = _emailController.text.trim();
         final String password = _passwordController.text.trim();
 
-        // Check if display name is already taken in Firestore
-        final querySnapshot = await FirebaseFirestore.instance
+        // Check if display name is already taken
+        final docSnapshot = await FirebaseFirestore.instance
             .collection('users')
-            .where('displayName', isEqualTo: displayName)
+            .doc(displayName)
             .get();
 
-        if (querySnapshot.docs.isNotEmpty) {
+        if (docSnapshot.exists) {
           if (!mounted) return;
           showCustomSnackBar(
             context,
@@ -57,23 +56,43 @@ class _RegisterDialogState extends State<RegisterDialog> {
           return;
         }
 
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
         // Update Firebase Auth display name
         await userCredential.user?.updateDisplayName(displayName);
 
-        // Save user data to Cloud Firestore with empty save slots for future use
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-              'uid': userCredential.user!.uid,
-              'email': email,
-              'displayName': displayName,
-              'createdAt': FieldValue.serverTimestamp(),
-              'saveSlots': {'slot1': null, 'slot2': null, 'slot3': null},
-            });
+        // Transaction to safely increment player counter and create user doc
+        final counterRef = FirebaseFirestore.instance.collection('metadata').doc('counters');
+        final userRef = FirebaseFirestore.instance.collection('users').doc(displayName);
+
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot counterDoc = await transaction.get(counterRef);
+          int newPlayerNumber = 1;
+          
+          if (counterDoc.exists) {
+            newPlayerNumber = (counterDoc.get('totalPlayers') ?? 0) + 1;
+          }
+
+          // Update the global counter
+          transaction.set(counterRef, {'totalPlayers': newPlayerNumber}, SetOptions(merge: true));
+
+          // Save user data with the player number
+          transaction.set(userRef, {
+            'uid': userCredential.user!.uid,
+            'email': email,
+            'displayName': displayName,
+            'playerNumber': newPlayerNumber,
+            'createdAt': FieldValue.serverTimestamp(),
+            'saveSlots': {
+              'slot1': null,
+              'slot2': null,
+              'slot3': null,
+            },
+          });
+        });
 
         widget.onRegisterSuccess();
       } on FirebaseAuthException catch (e) {
@@ -95,7 +114,11 @@ class _RegisterDialogState extends State<RegisterDialog> {
           default:
             message = e.message ?? 'An unknown error occurred.';
         }
-        showCustomSnackBar(context, message, type: SnackBarType.error);
+        showCustomSnackBar(
+          context,
+          message,
+          type: SnackBarType.error,
+        );
       } catch (e) {
         if (!mounted) return;
         showCustomSnackBar(
@@ -111,7 +134,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
   Widget build(BuildContext context) {
     return LiquidGlassDialog(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -119,27 +142,15 @@ class _RegisterDialogState extends State<RegisterDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  'Register',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 TextFormField(
                   controller: _displayNameController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'Display Name',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(255, 255, 255, 0.7)),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
+                      borderSide: const BorderSide(color: Color.fromRGBO(255, 255, 255, 0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -171,13 +182,9 @@ class _RegisterDialogState extends State<RegisterDialog> {
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(255, 255, 255, 0.7)),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
+                      borderSide: const BorderSide(color: Color.fromRGBO(255, 255, 255, 0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -197,9 +204,7 @@ class _RegisterDialogState extends State<RegisterDialog> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    final emailRegex = RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    );
+                    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                     if (!emailRegex.hasMatch(value)) {
                       return 'Please enter a valid email address';
                     }
@@ -213,13 +218,9 @@ class _RegisterDialogState extends State<RegisterDialog> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(255, 255, 255, 0.7)),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
+                      borderSide: const BorderSide(color: Color.fromRGBO(255, 255, 255, 0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -252,13 +253,9 @@ class _RegisterDialogState extends State<RegisterDialog> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    labelStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
+                    labelStyle: const TextStyle(color: Color.fromRGBO(255, 255, 255, 0.7)),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
+                      borderSide: const BorderSide(color: Color.fromRGBO(255, 255, 255, 0.5)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -284,21 +281,16 @@ class _RegisterDialogState extends State<RegisterDialog> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 ElevatedButton(
                   onPressed: _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withValues(alpha: 0.3),
+                    backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.5),
-                      ),
+                      side: const BorderSide(color: Color.fromRGBO(255, 255, 255, 0.5)),
                     ),
                   ),
                   child: const Text(
@@ -308,11 +300,9 @@ class _RegisterDialogState extends State<RegisterDialog> {
                 ),
                 TextButton(
                   onPressed: widget.onLoginRequested,
-                  child: Text(
+                  child: const Text(
                     'Already have an account? Login',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
+                    style: TextStyle(color: Color.fromRGBO(255, 255, 255, 0.8)),
                   ),
                 ),
               ],
