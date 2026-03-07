@@ -303,11 +303,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Center(
               child: Stack(
                 children: [
-                  MakeItButton(
-                    imagePath: 'assets/widget/dorm.png',
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    onHoverGlow: true,
+                  GestureDetector(
                     onTap: _showPlayDialog,
+                    child: Image.asset(
+                      'assets/widget/dorm.png',
+                      fit: BoxFit.contain,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                    ),
                   ),
                 ],
               ),

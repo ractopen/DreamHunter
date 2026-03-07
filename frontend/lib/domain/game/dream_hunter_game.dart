@@ -12,6 +12,9 @@ class DreamHunterGame extends FlameGame with HasKeyboardHandlerComponents {
 
   @override
   FutureOr<void> onLoad() async {
+    // Set prefix to empty since our assets are in assets/ (not assets/images/)
+    images.prefix = '';
+    
     // Load all assets into cache
     await images.loadAllImages();
 

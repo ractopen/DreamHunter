@@ -27,6 +27,9 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
   }
 
   Future<void> _startPreloading() async {
+    // Set prefix to empty since our assets are in assets/ (not assets/images/)
+    Flame.images.prefix = '';
+    
     // 1. Load basic images
     setState(() => _progress = 0.2);
     await Flame.images.loadAll([
