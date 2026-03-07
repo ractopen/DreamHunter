@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
-import 'package:flutter/services.dart';
 import 'package:dreamhunter/domain/game/dream_hunter_game.dart';
 
 class Player extends SpriteAnimationComponent
-    with HasGameRef<DreamHunterGame>, KeyboardHandler, CollisionCallbacks {
+    with HasGameRef<DreamHunterGame>, CollisionCallbacks {
   final double stepTime = 0.1;
   final double moveSpeed = 200;
   final double gravity = 9.8;
@@ -15,10 +13,11 @@ class Player extends SpriteAnimationComponent
 
   Vector2 velocity = Vector2.zero();
   bool isOnGround = false;
-  int horizontalDirection = 0;
+  JoystickComponent joystick;
 
   Player({
     position,
+    required this.joystick,
   }) : super(position: position, size: Vector2.all(32));
 
   @override
@@ -33,24 +32,6 @@ class Player extends SpriteAnimationComponent
     _applyGravity(dt);
     _updatePlayerMovement(dt);
     super.update(dt);
-  }
-
-  @override
-  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    horizontalDirection = 0;
-    final isLeftPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft);
-    final isRightPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight);
-
-    horizontalDirection += isLeftPressed ? -1 : 0;
-    horizontalDirection += isRightPressed ? 1 : 0;
-
-    if (keysPressed.contains(LogicalKeyboardKey.space) && isOnGround) {
-      _jump();
-    }
-
-    return super.onKeyEvent(event, keysPressed);
   }
 
   void _loadAllAnimations() {
@@ -72,13 +53,24 @@ class Player extends SpriteAnimationComponent
   }
 
   void _updatePlayerMovement(double dt) {
-    velocity.x = horizontalDirection * moveSpeed;
-    position.x += velocity.x * dt;
+    // Joystick horizontal movement
+    if (joystick.direction != JoystickDirection.idle) {
+      velocity.x = joystick.relativeDelta.x * moveSpeed;
+      position.x += velocity.x * dt;
 
-    if (horizontalDirection < 0 && scale.x > 0) {
-      flipHorizontallyAroundCenter();
-    } else if (horizontalDirection > 0 && scale.x < 0) {
-      flipHorizontallyAroundCenter();
+      // Jump if moving up significantly
+      if (joystick.relativeDelta.y < -0.5 && isOnGround) {
+        _jump();
+      }
+
+      // Flip sprite based on direction
+      if (joystick.relativeDelta.x < 0 && scale.x > 0) {
+        flipHorizontallyAroundCenter();
+      } else if (joystick.relativeDelta.x > 0 && scale.x < 0) {
+        flipHorizontallyAroundCenter();
+      }
+    } else {
+      velocity.x = 0;
     }
   }
 
@@ -89,7 +81,6 @@ class Player extends SpriteAnimationComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    // Collision logic will be refined when we have actual collision blocks
     if (velocity.y > 0) {
       if (position.y + size.y > other.position.y &&
           position.y < other.position.y) {

@@ -3,17 +3,17 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "fllowXwalls.tsj",
+    "activeFile": "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json": {
-            "scale": 0.125,
+            "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1304,
-                "y": 2376
+                "x": 878.6666666666666,
+                "y": 568.6666666666666
             }
         },
         "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map-1.json": {
@@ -41,7 +41,7 @@
             "scaleInEditor": 5.5
         },
         "fllowXwalls.tsj": {
-            "scaleInDock": 1,
+            "scaleInDock": 2,
             "scaleInEditor": 4
         },
         "map 1.json": {
@@ -60,20 +60,19 @@
     "openFiles": [
         "doors.tsj",
         "bed.tsj",
-        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map-1.json",
         "fllowXwalls.tsj",
         "char1.tsj",
-        "map 1.json"
+        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json"
     ],
     "project": "dreamhunter.tiled-project",
     "recentFiles": [
-        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json",
         "doors.tsj",
         "bed.tsj",
+        "fllowXwalls.tsj",
+        "char1.tsj",
+        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json",
         "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map-1.json",
         "map 1.json",
-        "char1.tsj",
-        "fllowXwalls.tsj",
         "door.tsj"
     ],
     "tileset.lastUsedFormat": "json",

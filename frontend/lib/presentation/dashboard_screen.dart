@@ -254,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   MakeItButton(
                     imagePath: 'assets/widget/dorm.png',
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 1,
                     onHoverGlow: true,
                     onTap: () {
                       Navigator.push(
