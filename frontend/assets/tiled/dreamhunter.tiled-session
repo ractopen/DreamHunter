@@ -8,6 +8,14 @@
         "."
     ],
     "fileStates": {
+        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1304,
+                "y": 2376
+            }
+        },
         "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map-1.json": {
             "scale": 0.33,
             "selectedLayer": 0,
@@ -46,9 +54,9 @@
         }
     },
     "last.imagePath": "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/sprites/character",
-    "map.height": 80,
+    "map.height": 50,
     "map.lastUsedFormat": "json",
-    "map.width": 80,
+    "map.width": 50,
     "openFiles": [
         "doors.tsj",
         "bed.tsj",
@@ -59,6 +67,7 @@
     ],
     "project": "dreamhunter.tiled-project",
     "recentFiles": [
+        "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map 1.json",
         "doors.tsj",
         "bed.tsj",
         "/home/ryme/All/Programming/School/DreamHunter/frontend/assets/map/map-1.json",

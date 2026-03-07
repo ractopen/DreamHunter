@@ -1,20 +1,22 @@
 # Gemini CLI Workflow Mandates
 
-This project follows a strict development workflow to ensure consistency and clean repository management.
+This project follows a strict development workflow synchronized with Jira Scrum/Sprint management.
 
-## Git Workflow
-For every new task (SCRUM-XX):
-1. **Branch Creation**: Create a new branch from `development` with the name `SCRUM-XX-task-name`.
-2. **Implementation**: Perform the required changes within the branch and push to origin.
-3. **Review**: Create a Pull Request (PR) to `development`. **Wait for Baz review and user confirmation.**
-4. **Finalization**: ONLY after the user explicitly confirms:
-   - Switch to `development` and merge.
-   - Delete the local branch: `git branch -d SCRUM-XX-task-name`.
-   - Delete the remote branch: `git push origin --delete SCRUM-XX-task-name`.
+## Git Sprint Workflow
+For every new Sprint or set of related tasks:
+1. **Branch Creation**: Create a single branch for the active tasks, named with the primary SCRUM keys (e.g., `sprint-X-SCRUM-16-17-18`).
+2. **Implementation**: Perform changes within this branch.
+3. **Double-Key Commits**: EVERY commit MUST include the relevant SCRUM keys as prefixes (e.g., `SCRUM-16 SCRUM-17 [Message]`) to ensure Jira tracking.
+4. **Push & Review**: Push the sprint branch to origin for Baz review.
+5. **Finalization (User Signal Only)**: ONLY after the user explicitly says "finished" or "merge":
+   - Switch to `development` and merge the sprint branch.
+   - Push `development` to remote.
+   - Delete the local sprint branch.
+   - Delete the remote sprint branch.
 
 ## Project Structure
 - `backend/`: Python (FastAPI/Firebase) backend.
 - `frontend/`: Flutter/Flame application.
 
 ## Asset Management
-Always register new assets in `frontend/pubspec.yaml` under the appropriate category to ensure the Flame engine can load them correctly.
+Always register new assets in `frontend/pubspec.yaml` under the appropriate category.
