@@ -1,7 +1,5 @@
 import 'package:dreamhunter/widgets/custom_snackbar.dart';
-import 'package:dreamhunter/screens/loading_screen.dart';
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dreamhunter/widgets/clickable_image.dart';
@@ -122,14 +120,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             String logoPath = '';
             if (_currentDialogType == AuthDialogType.login) {
-              logoPath = 'assets/widget/loginLogo.png';
+              logoPath = 'assets/images/auth/login_logo.png';
             } else if (_currentDialogType == AuthDialogType.register) {
-              logoPath = 'assets/widget/registerLogo.png';
+              logoPath = 'assets/images/auth/register_logo.png';
             }
 
             final double dialogX =
                 (MediaQuery.of(context).size.width - dialogWidth) / 2;
-            // Shifted dialogY down by another 40 pixels (total +100)
             final double dialogY =
                 (MediaQuery.of(context).size.height - dialogHeight) / 2 + 100;
 
@@ -142,45 +139,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Positioned(
                   left: dialogX,
                   top: dialogY,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                      child: Container(
-                        width: dialogWidth,
-                        height: dialogHeight,
-                        padding: const EdgeInsets.fromLTRB(
-                          20,
-                          logoOverlap + 10,
-                          20,
-                          20,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(255, 255, 255, 0.1),
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(
-                            color: const Color.fromRGBO(255, 255, 255, 0.2),
-                            width: 1.5,
-                          ),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color.fromRGBO(255, 255, 255, 0.15),
-                              Color.fromRGBO(255, 255, 255, 0.05),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.1),
-                              blurRadius: 10,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: LiquidGlassDialog(child: dialogContent),
-                      ),
+                  child: LiquidGlassDialog(
+                    width: dialogWidth,
+                    height: dialogHeight,
+                    padding: const EdgeInsets.fromLTRB(
+                      20,
+                      logoOverlap + 10,
+                      20,
+                      20,
                     ),
+                    child: dialogContent,
                   ),
                 ),
                 if (logoPath.isNotEmpty)
@@ -199,111 +167,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             );
           },
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          child: FadeTransition(opacity: animation, child: child),
-        );
-      },
-    );
-  }
-
-  void _showPlayDialog() {
-    showGeneralDialog(
-      context: context,
-      barrierLabel: "PlayDialog",
-      barrierDismissible: true,
-      barrierColor: const Color.fromRGBO(0, 0, 0, 0.5),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        const double dialogWidth = 350;
-        const double dialogHeight = 400;
-        final double dialogX =
-            (MediaQuery.of(context).size.width - dialogWidth) / 2;
-        final double dialogY =
-            (MediaQuery.of(context).size.height - dialogHeight) / 2;
-
-        return Stack(
-          children: [
-            Positioned(
-              left: dialogX,
-              top: dialogY,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                  child: Container(
-                    width: dialogWidth,
-                    height: dialogHeight,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(255, 255, 255, 0.1),
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(
-                        color: const Color.fromRGBO(255, 255, 255, 0.2),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Ready to enter the Dream World?",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context); // Close dialog
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoadingScreen(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purpleAccent,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 15,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: const Text(
-                            "ENTER",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "CANCEL",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         );
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
@@ -334,7 +197,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 maxWidth: 150,
                 maxHeight: 150,
                 child: MakeItButton(
-                  imagePath: 'assets/widget/sandwitch.png',
+                  imagePath: 'assets/images/dashboard/sandwich.png',
                   width: 45,
                   height: 45,
                   onTap: _showAuthDialog,
@@ -350,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/widget/mainbg.png',
+            'assets/images/dashboard/main_background.png',
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
@@ -360,24 +223,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             left: 0,
             right: 0,
             child: Center(
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: _showPlayDialog,
-                    child: Image.asset(
-                      'assets/widget/dorm.png',
-                      fit: BoxFit.contain,
-                      width: MediaQuery.of(context).size.width * 0.8,
-                    ),
-                  ),
-                ],
+              child: Image.asset(
+                'assets/images/game/environment/dorm.png',
+                fit: BoxFit.contain,
+                width: MediaQuery.of(context).size.width * 0.8,
               ),
             ),
           ),
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.15,
             child: Image.asset(
-              'assets/widget/signage.png',
+              'assets/images/dashboard/signage.png',
               fit: BoxFit.contain,
               width: 80,
               height: 80,
@@ -386,7 +242,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Positioned(
             bottom: 0,
             child: Image.asset(
-              'assets/widget/rouletman.png',
+              'assets/images/dashboard/roulette_man.png',
               fit: BoxFit.contain,
               width: 200,
               height: 200,
@@ -396,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             bottom: 0,
             right: -1,
             child: Image.asset(
-              'assets/widget/shopstall.png',
+              'assets/images/dashboard/shop_stall.png',
               fit: BoxFit.contain,
               width: 200,
               height: 200,

@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
 
+/// A highly interactive, animated image-based button for indie game UIs.
+/// Supports hover scaling, click feedback, and a glow effect.
+///
+/// ### How to use:
+/// ```dart
+/// MakeItButton(
+///   imagePath: 'assets/images/dashboard/sandwich.png',
+///   onTap: () => print('Button Tapped!'),
+///   width: 50,
+///   height: 50,
+///   onHoverGlow: true,
+/// )
+/// ```
 class MakeItButton extends StatefulWidget {
+  /// Path to the asset image.
   final String imagePath;
+
+  /// Callback function when the button is tapped.
   final VoidCallback? onTap;
+
+  /// Width of the button.
   final double width;
+
+  /// Height of the button.
   final double height;
-  final bool clickResponsiveness; // New property
-  final bool onHoverGlow; // New property
-  final bool isClickable; // New property
+
+  /// Whether the button scales down slightly when pressed.
+  final bool clickResponsiveness;
+
+  /// Whether a white glow appears behind the image on hover.
+  final bool onHoverGlow;
+
+  /// Whether the button is currently interactive.
+  final bool isClickable;
 
   const MakeItButton({
     super.key,
@@ -15,9 +41,9 @@ class MakeItButton extends StatefulWidget {
     this.onTap,
     this.width = 50,
     this.height = 50,
-    this.clickResponsiveness = true, // Default to true
-    this.onHoverGlow = true, // Default to true
-    this.isClickable = true, // Default to true
+    this.clickResponsiveness = true,
+    this.onHoverGlow = true,
+    this.isClickable = true,
   });
 
   @override
@@ -48,25 +74,17 @@ class _MakeItButtonState extends State<MakeItButton> {
           scale: (widget.clickResponsiveness && (_isHovering || _isTapped))
               ? 1.1
               : 1.0,
-          duration: const Duration(
-            milliseconds: 100,
-          ), // Reduced duration for responsiveness
+          duration: const Duration(milliseconds: 100),
           child: AnimatedContainer(
-            duration: const Duration(
-              milliseconds: 100,
-            ), // Reduced duration for responsiveness
+            duration: const Duration(milliseconds: 100),
             decoration: widget.onHoverGlow && (_isHovering || _isTapped)
                 ? BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.white.withAlpha(
-                          (255 * 0.8).round(),
-                        ), // White glow color
-                        blurRadius:
-                            25.0, // Increased blur for a softer, more spread effect
-                        spreadRadius:
-                            1.0, // Reduced spread to keep it closer to the edges
-                        offset: Offset.zero, // Ensure the shadow is centered
+                        color: Colors.white.withAlpha((255 * 0.8).round()),
+                        blurRadius: 25.0,
+                        spreadRadius: 1.0,
+                        offset: Offset.zero,
                       ),
                     ],
                   )

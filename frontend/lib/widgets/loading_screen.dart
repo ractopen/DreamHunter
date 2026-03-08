@@ -1,70 +1,54 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
+/// A reusable loading bar widget that displays progress.
+///
+/// ### How to use:
+/// ```dart
+/// LoadingScreen(progress: 0.5) // Displays 50%
+/// ```
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({super.key});
+  final double progress;
+
+  const LoadingScreen({super.key, this.progress = 0.0});
 
   @override
   State<LoadingScreen> createState() => _LoadingScreenState();
 }
 
 class _LoadingScreenState extends State<LoadingScreen>
-    with TickerProviderStateMixin {
-  // Added TickerProviderStateMixin
-  double _progress = 0.0;
-  Timer? _timer;
-  late AnimationController
-  _rotationController; // Animation controller for rotation
+    with SingleTickerProviderStateMixin {
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-      setState(() {
-        if (_progress < 1.0) {
-          _progress += 0.01;
-        } else {
-          _timer?.cancel();
-        }
-      });
-    });
-
     _rotationController = AnimationController(
-      duration: const Duration(seconds: 3), // Rotate over 3 seconds
+      duration: const Duration(seconds: 3),
       vsync: this,
-    )..repeat(); // Repeat the animation
+    )..repeat();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _rotationController.dispose(); // Dispose of the animation controller
+    _rotationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Make Scaffold transparent
-      extendBodyBehindAppBar: true, // Allow content to extend behind app bar
-      body: Align(
-        alignment: Alignment.bottomCenter,
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
         child: Row(
-          // Row is now direct child of Align
-          mainAxisAlignment: MainAxisAlignment
-              .spaceBetween, // Distribute elements across the width
           children: [
             Container(
               decoration: BoxDecoration(
-                shape: BoxShape.circle, // Added this line
+                shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(
-                      255,
-                      229,
-                      46,
-                      246,
-                    ).withAlpha((255 * 0.5).round()),
+                    color: const Color.fromARGB(255, 229, 46, 246)
+                        .withValues(alpha: 0.5),
                     blurRadius: 8,
                     spreadRadius: 2,
                   ),
@@ -73,25 +57,21 @@ class _LoadingScreenState extends State<LoadingScreen>
               child: RotationTransition(
                 turns: _rotationController,
                 child: Image.asset(
-                  'assets/widget/smallcirclefigure.png',
-                  width: 48, // 2x larger
-                  height: 48, // 2x larger
+                  'assets/images/dashboard/small_circle_figure.png',
+                  width: 48,
+                  height: 48,
                 ),
               ),
             ),
-            // Removed SizedBox here, as Expanded and SpaceBetween will handle spacing
+            const SizedBox(width: 15),
             Expanded(
-              // Loading Bar (middle)
               child: Container(
                 height: 28.0,
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 3.0,
-                  ), // Added black border
+                  border: Border.all(color: Colors.black, width: 3.0),
                 ),
                 child: LinearProgressIndicator(
-                  value: _progress,
+                  value: widget.progress,
                   minHeight: 20.0,
                   backgroundColor: Colors.transparent,
                   valueColor: const AlwaysStoppedAnimation<Color>(
@@ -100,12 +80,16 @@ class _LoadingScreenState extends State<LoadingScreen>
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            Text(
-              '${(_progress * 100).toInt()}%',
-              style: TextStyle(
-                fontSize: 18,
-                color: const Color.fromARGB(255, 188, 173, 173),
+            const SizedBox(width: 15),
+            SizedBox(
+              width: 50,
+              child: Text(
+                '${(widget.progress * 100).toInt()}%',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Color.fromARGB(255, 188, 173, 173),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

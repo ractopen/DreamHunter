@@ -1,7 +1,7 @@
 # Gemini CLI Workflow Mandates
 
 This project follows a strict development workflow to ensure consistency and clean repository management.
-
+SCRUM-33 is always the go to if its just minor change so this scrum is called  clean up so use this for commits
 ## Git Workflow
 For every new task (SCRUM-XX):
 1. **Branch Creation**: Create a new branch from `development` with the name `SCRUM-XX-task-name`.
@@ -18,3 +18,7 @@ For every new task (SCRUM-XX):
 
 ## Asset Management
 Always register new assets in `frontend/pubspec.yaml` under the appropriate category to ensure the Flame engine can load them correctly.
+
+## Flutter Standards
+- **Deprecation Policy**: Do not use deprecated members. Specifically, avoid `withOpacity()`; instead, use `.withValues(alpha: 0.x)` (e.g., `Colors.red.withValues(alpha: 0.5)`) to avoid precision loss.
+

@@ -17,6 +17,7 @@ dependencies:
   flame_tiled: ^1.21.2
   firebase_auth: ^6.1.4
   audioplayers: ^6.5.1
+  google_fonts: ^8.0.2
 
 dev_dependencies:
   flutter_test:
@@ -27,10 +28,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/widget/
+    - assets/images/auth/
+    - assets/images/core/
+    - assets/images/dashboard/
+    - assets/images/game/environment/
+    - assets/images/game/characters/
     - assets/tiles/
-    - assets/sprites/character/
-    - assets/sprites/floor/
-    - assets/sprites/tower/
 
 

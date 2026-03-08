@@ -1,3 +1,5 @@
+import 'package:dreamhunter/services/auth_service.dart';
+import 'package:dreamhunter/services/auth_ui_helper.dart';
 import 'package:dreamhunter/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,13 +23,14 @@ class _LoginDialogState extends State<LoginDialog> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        await _authService.signIn(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
         widget.onLoginSuccess();
       } on FirebaseAuthException catch (e) {
@@ -35,31 +38,22 @@ class _LoginDialogState extends State<LoginDialog> {
         String message;
         switch (e.code) {
           case 'user-not-found':
-            message = 'No user found for that email.';
+            message = 'No account found with this email.';
             break;
           case 'wrong-password':
-            message = 'Wrong password provided for that user.';
-            break;
-          case 'invalid-email':
-            message = 'The email address is badly formatted.';
-            break;
-          case 'user-disabled':
-            message = 'This user account has been disabled.';
+            message = 'Incorrect password.';
             break;
           case 'too-many-requests':
-            message = 'Too many requests. Please try again later.';
+            message = 'Too many attempts. Try again later.';
             break;
           default:
-            message = e.message ?? 'An unknown error occurred.';
+            message = e.message ?? 'An error occurred during login.';
         }
         showCustomSnackBar(context, message, type: SnackBarType.error);
       } catch (e) {
         if (!mounted) return;
-        showCustomSnackBar(
-          context,
-          'An unexpected error occurred: $e',
-          type: SnackBarType.error,
-        );
+        showCustomSnackBar(context, 'Unexpected error: $e',
+            type: SnackBarType.error);
       }
     }
   }
@@ -74,87 +68,21 @@ class _LoginDialogState extends State<LoginDialog> {
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _emailController,
                   style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: const TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.7),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(255, 255, 255, 0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    final emailRegex = RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    );
-                    if (!emailRegex.hasMatch(value)) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
+                  decoration: AuthUIHelper.inputDecoration('Email'),
+                  validator: AuthUIHelper.validateEmail,
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
                   controller: _passwordController,
                   style: const TextStyle(color: Colors.white),
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: const TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.7),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Color.fromRGBO(255, 255, 255, 0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
+                  decoration: AuthUIHelper.inputDecoration('Password'),
+                  validator: AuthUIHelper.validatePassword,
                 ),
                 const SizedBox(height: 25),
                 ElevatedButton(
@@ -163,27 +91,22 @@ class _LoginDialogState extends State<LoginDialog> {
                     backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 15,
-                    ),
+                        horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                       side: const BorderSide(
-                        color: Color.fromRGBO(255, 255, 255, 0.5),
-                      ),
+                          color: Color.fromRGBO(255, 255, 255, 0.5)),
                     ),
                   ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  child: const Text('Login',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
                 TextButton(
                   onPressed: widget.onRegisterRequested,
-                  child: const Text(
-                    "Don't have an account? Register",
-                    style: TextStyle(color: Color.fromRGBO(255, 255, 255, 0.8)),
-                  ),
+                  child: const Text("Don't have an account? Register",
+                      style:
+                          TextStyle(color: Color.fromRGBO(255, 255, 255, 0.8))),
                 ),
               ],
             ),

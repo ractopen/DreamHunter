@@ -12,15 +12,74 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  double _progress = 0.0;
+
   @override
   void initState() {
     super.initState();
-    _checkCurrentUser();
+    // Use addPostFrameCallback to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAppData();
+    });
   }
 
-  Future<void> _checkCurrentUser() async {
-    await Future.delayed(const Duration(seconds: 3));
+  /// Real initialization logic to avoid lagging UI
+  Future<void> _initializeAppData() async {
+    final startTime = DateTime.now();
+
+    final imagesToPrecache = [
+      'assets/images/dashboard/main_background.png',
+      'assets/images/dashboard/background_1.png',
+      'assets/images/dashboard/shop_stall.png',
+      'assets/images/dashboard/roulette_man.png',
+      'assets/images/dashboard/signage.png',
+      'assets/images/game/environment/dorm.png',
+    ];
+
+    // Pre-cache images and update progress
+    for (int i = 0; i < imagesToPrecache.length; i++) {
+      if (!mounted) return;
+      try {
+        await precacheImage(AssetImage(imagesToPrecache[i]), context);
+      } catch (e) {
+        debugPrint('Failed to precache: ${imagesToPrecache[i]} - $e');
+      }
+      setState(() {
+        _progress = (i + 1) / (imagesToPrecache.length + 1); // Save room for final sync
+      });
+    }
+
+    // Ensure we wait at least 2 seconds total for the logo display
+    final endTime = DateTime.now();
+    final elapsed = endTime.difference(startTime).inMilliseconds;
+    const minimumWait = 2000;
+
+    if (elapsed < minimumWait) {
+      final remaining = minimumWait - elapsed;
+      // Increment progress smoothly during the remaining wait
+      final steps = 20;
+      for (int i = 1; i <= steps; i++) {
+        await Future.delayed(Duration(milliseconds: remaining ~/ steps));
+        if (!mounted) return;
+        setState(() {
+          _progress = (imagesToPrecache.length / (imagesToPrecache.length + 1)) +
+              ((i / steps) * (1 / (imagesToPrecache.length + 1)));
+        });
+      }
+    }
+
     if (!mounted) return;
+
+    setState(() {
+      _progress = 1.0;
+    });
+
+    // Short delay at 100% for smooth transition
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (!mounted) return;
+
+    // Transition to Dashboard
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const DashboardScreen()),
     );
@@ -34,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ImageFiltered(
             imageFilter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 5.0),
             child: Image.asset(
-              'assets/widget/bg1.png',
+              'assets/images/dashboard/background_1.png',
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,
@@ -50,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ImageFiltered(
                   imageFilter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
                   child: Image.asset(
-                    'assets/widget/splashlogo.png',
+                    'assets/images/core/splash_logo.png',
                     width: 600.0,
                     height: 600.0,
                     color: const Color.fromRGBO(169, 13, 200, 0.5),
@@ -58,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 Image.asset(
-                  'assets/widget/splashlogo.png',
+                  'assets/images/core/splash_logo.png',
                   width: 600.0,
                   height: 600.0,
                   color: const Color.fromRGBO(228, 159, 240, 0.8),
@@ -67,7 +126,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ],
             ),
           ),
-          const LoadingScreen(),
+          LoadingScreen(progress: _progress),
         ],
       ),
     );

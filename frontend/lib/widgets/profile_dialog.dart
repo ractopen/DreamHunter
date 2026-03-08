@@ -1,8 +1,10 @@
+import 'package:dreamhunter/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dreamhunter/widgets/liquid_glass_dialog.dart';
 
+/// A dialog that displays the current player's profile information.
+/// Uses [AuthService] for logout and [FirebaseFirestore] for extra player data.
 class ProfileDialog extends StatelessWidget {
   final VoidCallback onLogoutRequested;
 
@@ -10,7 +12,8 @@ class ProfileDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final AuthService authService = AuthService();
+    final user = authService.currentUser;
     final String displayName = user?.displayName ?? 'No Name';
     final String email = user?.email ?? 'No Email';
 
@@ -90,7 +93,7 @@ class ProfileDialog extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
+                  await authService.signOut();
                   onLogoutRequested();
                 },
                 style: ElevatedButton.styleFrom(

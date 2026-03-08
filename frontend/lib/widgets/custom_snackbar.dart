@@ -1,55 +1,87 @@
 import 'package:flutter/material.dart';
 
-enum SnackBarType { success, error, warning }
+/// Defines the visual style of the snackbar.
+enum SnackBarType { success, error, info }
 
+/// Displays a stylized, game-themed snackbar message at the top of the screen.
+///
+/// ### How to use:
+/// ```dart
+/// showCustomSnackBar(
+///   context,
+///   'Quest Completed!',
+///   type: SnackBarType.success,
+/// );
+/// ```
 void showCustomSnackBar(
   BuildContext context,
   String message, {
-  SnackBarType type = SnackBarType.success,
+  SnackBarType type = SnackBarType.info,
 }) {
-  Color backgroundColor;
-  IconData icon;
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) {
+      Color bgColor;
+      IconData icon;
 
-  switch (type) {
-    case SnackBarType.success:
-      backgroundColor = Colors.green;
-      icon = Icons.check_circle_outline;
-      break;
-    case SnackBarType.error:
-      backgroundColor = Colors.red;
-      icon = Icons.error_outline;
-      break;
-    case SnackBarType.warning:
-      backgroundColor = Colors.orange;
-      icon = Icons.warning_amber_outlined;
-      break;
-  }
+      switch (type) {
+        case SnackBarType.success:
+          bgColor = Colors.greenAccent.withValues(alpha: 0.9);
+          icon = Icons.check_circle_outline;
+          break;
+        case SnackBarType.error:
+          bgColor = Colors.redAccent.withValues(alpha: 0.9);
+          icon = Icons.error_outline;
+          break;
+        case SnackBarType.info:
+          bgColor = Colors.blueAccent.withValues(alpha: 0.9);
+          icon = Icons.info_outline;
+          break;
+      }
 
-  ScaffoldMessenger.of(context).clearSnackBars();
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+      return Positioned(
+        top: 50,
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-      backgroundColor: backgroundColor,
-      behavior: SnackBarBehavior.floating,
-      elevation: 6,
-      margin: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      duration: const Duration(seconds: 3),
-    ),
+        ),
+      );
+    },
   );
+
+  overlay.insert(overlayEntry);
+  Future.delayed(const Duration(seconds: 3), () {
+    overlayEntry.remove();
+  });
 }
