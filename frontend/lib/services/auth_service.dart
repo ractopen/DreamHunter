@@ -1,0 +1,100 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+/// A centralized service for managing authentication and Firebase interactions.
+///
+/// ### How to use:
+/// ```dart
+/// final AuthService _auth = AuthService();
+///
+/// // Sign in
+/// await _auth.signIn(email, password);
+///
+/// // Register
+/// await _auth.register(
+///   email: email,
+///   password: password,
+///   displayName: displayName,
+/// );
+///
+/// // Sign out
+/// await _auth.signOut();
+/// ```
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  /// Sign in with email and password
+  Future<UserCredential> signIn(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// Register new user with display name and Firestore record
+  Future<void> register({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    // 1. Check if display name is already taken
+    final docSnapshot = await _db.collection('users').doc(displayName).get();
+    if (docSnapshot.exists) {
+      throw FirebaseAuthException(
+        code: 'display-name-taken',
+        message: 'This display name is already in use.',
+      );
+    }
+
+    // 2. Create the Auth account
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // 3. Update Auth display name
+    await userCredential.user?.updateDisplayName(displayName);
+
+    // 4. Use a Transaction for the global counter and user document
+    final counterRef = _db.collection('metadata').doc('counters');
+    final userRef = _db.collection('users').doc(displayName);
+
+    await _db.runTransaction((transaction) async {
+      DocumentSnapshot counterDoc = await transaction.get(counterRef);
+      int newPlayerNumber = 1;
+
+      if (counterDoc.exists) {
+        newPlayerNumber = (counterDoc.get('totalPlayers') ?? 0) + 1;
+      }
+
+      // Update global counter
+      transaction.set(
+        counterRef,
+        {'totalPlayers': newPlayerNumber},
+        SetOptions(merge: true),
+      );
+
+      // Create the user profile
+      transaction.set(userRef, {
+        'uid': userCredential.user!.uid,
+        'email': email,
+        'displayName': displayName,
+        'playerNumber': newPlayerNumber,
+        'createdAt': FieldValue.serverTimestamp(),
+        'saveSlots': {'slot1': null, 'slot2': null, 'slot3': null},
+      });
+    });
+  }
+
+  /// Log out
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  /// Get current user
+  User? get currentUser => _auth.currentUser;
+
+  /// Auth state stream
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+}

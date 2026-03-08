@@ -11,13 +11,13 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  bonfire: ^3.16.1
   firebase_core: ^4.4.0
   cloud_firestore: ^6.1.2
   http: ^1.6.0
   flame_tiled: ^1.21.2
   firebase_auth: ^6.1.4
   audioplayers: ^6.5.1
+  google_fonts: ^8.0.2
 
 dev_dependencies:
   flutter_test:
@@ -28,7 +28,11 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/Free/
-    - assets/widget/
+    - assets/images/auth/
+    - assets/images/core/
+    - assets/images/dashboard/
+    - assets/images/game/environment/
+    - assets/images/game/characters/
+    - assets/tiles/
 
 
