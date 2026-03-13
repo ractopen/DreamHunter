@@ -24,7 +24,11 @@ class Level extends World {
   @override
   FutureOr<void> onLoad() async {
     try {
-      level = await TiledComponent.load('$levelName.tmx', Vector2.all(16));
+      level = await TiledComponent.load(
+        '$levelName.tmx', 
+        Vector2.all(16),
+        prefix: 'assets/images/tiles/',
+      );
       add(level);
 
       // Hide the Object tile layer as we spawn components for them
